@@ -37,13 +37,11 @@ namespace EnhancedSlingshots
             ToolPatchs.Initialize(Monitor);
 
             config = Helper.ReadConfig<Config>();
-            infinitySlingTexture = helper.Content.Load<Texture2D>("assets/InfinitySlingshot.png", ContentSource.ModFolder);
-           
+            infinitySlingTexture = helper.Content.Load<Texture2D>("assets/InfinitySlingshot.png", ContentSource.ModFolder);   
             Helper.Events.Display.MenuChanged += OnMenuChanged;
-            Helper.Events.GameLoop.GameLaunched += OnGameLaunched;
+            Helper.Events.GameLoop.GameLaunched += OnGameLaunched;    
             harmony.PatchAll(Assembly.GetExecutingAssembly());
-
-        }
+        }     
 
         public void OnGameLaunched(object sender, GameLaunchedEventArgs e)
         {
@@ -88,7 +86,7 @@ namespace EnhancedSlingshots
             if (asset.AssetNameEquals("Data/Weapons"))
             {
                 IDictionary<int, string> data = asset.AsDictionary<int, string>().Data;
-                data.Add(config.InfinitySlingshotId, GetInfinitySlingshotData());    
+                data.Add(config.InfinitySlingshotId, GetInfinitySlingshotData());             
             }
 
             if (asset.AssetNameEquals("TileSheets/weapons"))
@@ -99,7 +97,7 @@ namespace EnhancedSlingshots
                 weapons.PatchImage(infinitySlingTexture, targetArea: area);
             }
         }
-        public Rectangle GetTargetArea(int id) => new Rectangle((id%8)*16, (id/8)*16, 16, 16);
+        private Rectangle GetTargetArea(int id) => new Rectangle((id%8)*16, (id/8)*16, 16, 16);
         private string GetInfinitySlingshotData()
         {
             return $"Infinity Slingshot/{i18n.Get("InfinitySlingshotDescription")}/1/3/1/308/0/0/4/-1/-1/0/.02/3/{i18n.Get("InfinitySlingshotName")}";

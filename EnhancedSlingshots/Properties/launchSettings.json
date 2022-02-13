@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "SlingshotEnchantments": {
+    "EnhancedSlingshots": {
       "commandName": "Project",
       "commandLineArgs": " --mods-path \"Mods teste\""
     }
