@@ -34,25 +34,42 @@ namespace QualityFishPonds.Patch
             {
                 if (__instance.modData.ContainsKey(ModEntry.fishPondIdKey))
                 {
+                    double playerLuck = Game1.player.DailyLuck;
                     string pondData = __instance.modData[ModEntry.fishPondIdKey];
                     double random = Game1.random.NextDouble();
-                    if (Game1.player.professions.Contains(8) && random < (pondData.Count(x => x == '4') * (Game1.player.LuckLevel / 10)) / (2 * pondData.Count(x => int.TryParse(x.ToString(), out int result) == true)))
-                        pondData += "4";
-                    else if (random < 0.33)
-                        pondData += "2";
-                    else if (random < 0.66)
-                        pondData += "1";
-                    else
-                        pondData += "0";
 
-                    __instance.modData[ModEntry.fishPondIdKey] = pondData;
-                    //Monitor.Log($"pondData: {pondData}", LogLevel.Info);
+                    if(ModEntry.Instance.config.EnableGaranteedIridum && playerLuck < -0.02)
+                    {
+                        pondData += "2";
+                        __instance.modData[ModEntry.fishPondIdKey] = pondData;
+                        return;
+                    }
+                    else if (ModEntry.Instance.config.EnableGaranteedIridum && pondData.Count(x => x == '4') == pondData.Count() && playerLuck >= -0.02)
+                    {
+                        pondData += "4";
+                        __instance.modData[ModEntry.fishPondIdKey] = pondData;
+                        return;
+                    }
+                    else
+                    {
+                        if (random < (pondData.Count(x => x == '4') * (Game1.player.LuckLevel / 10)) / (2 * pondData.Count(x => int.TryParse(x.ToString(), out int result) == true)))
+                            pondData += "4";
+                        if (random < 0.33)
+                            pondData += "2";
+                        else if (random < 0.66)
+                            pondData += "1";
+                        else
+                            pondData += "0";
+
+                        __instance.modData[ModEntry.fishPondIdKey] = pondData;
+                        return;
+                    }
+                                 
                 }
                 else
                     Monitor.Log("Couldn't find Fish Pond ID", LogLevel.Info);
                 
             }          
-
         }
 
         [HarmonyPostfix]
@@ -73,7 +90,7 @@ namespace QualityFishPonds.Patch
                 if (__instance.FishCount > 0)
                 {
                     fishQualities = "0";
-                    for (int x = 0; x < __instance.FishCount; x++)                    
+                    for (int x = 1; x < __instance.FishCount; x++)                    
                         fishQualities += "0";                    
                 }
 

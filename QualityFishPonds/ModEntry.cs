@@ -11,36 +11,41 @@ namespace QualityFishPonds
 {
     public class ModEntry : Mod
     {
-        public static string fishPondIdKey;  
+        public static ModEntry Instance;
+        public static string fishPondIdKey;
+        internal Config config;
         private Harmony harmony;
         public override void Entry(IModHelper helper)
-        {        
+        {
+            Instance = this;
             harmony = new(Helper.ModRegistry.ModID);
             fishPondIdKey = $"{Helper.ModRegistry.ModID}(FishPondID)";
             FishPondPatchs.Initialize(this.Monitor);
             FishingRodPatchs.Initialize(this.Monitor);
-            Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
+            config = helper.ReadConfig<Config>();
+            Helper.Events.GameLoop.DayStarted += OnDayStarted;          
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
-        private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
+        private void OnDayStarted(object sender, DayStartedEventArgs e)
         {
             Farm farm = Game1.getFarm();
-            foreach(Building bulding in farm.buildings)
-            {
-                if(bulding is FishPond pond)
+            foreach(Building building in farm.buildings)
+            {           
+                if(building is FishPond || building.GetType().IsSubclassOf(typeof(FishPond)))
                 {
+                    FishPond pond = (FishPond)building;                     
                     if (!pond.modData.ContainsKey(fishPondIdKey))
                     {
-                        string fishQualities = "";
+                        string fishQualities = "";           
                         if (pond.FishCount > 0)
                         {
                             fishQualities = "0";
-                            for (int x = 0; x < pond.FishCount; x++)                            
+                            for (int x = 1; x < pond.FishCount; x++)
                                 fishQualities += "0";                            
-                        }
-                        pond.modData.Add(fishPondIdKey, fishQualities);                       
-                    }
+                        }                   
+                        pond.modData.Add(fishPondIdKey, fishQualities);                      
+                    }                  
                 }
             }
         }

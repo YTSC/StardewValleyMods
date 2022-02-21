@@ -26,18 +26,16 @@ namespace QualityFishPonds.Patch
                 var calculateBobberTileMethod = AccessTools.Method(typeof(FishingRod), "calculateBobberTile");
                 Vector2 bobberTile = (Vector2)calculateBobberTileMethod.Invoke(__instance, new object[] { });
 
-                Farm farm = Game1.getFarm();               
-                foreach (var building in farm.buildings)
-                {
-                    if (building is FishPond pond && pond.occupiesTile(bobberTile))
-                    {
-                        string pondData = pond.modData[ModEntry.fishPondIdKey];                       
-                        int randomIndex = Game1.random.Next(pondData.Length);   
-                        fishQuality = int.Parse(pondData[randomIndex].ToString()); 
-                        pond.modData[ModEntry.fishPondIdKey] = pondData.Remove(randomIndex, 1);                     
-                        return;
-                    }
-                }               
+                Building building = Game1.getFarm().getBuildingAt(bobberTile);
+                if ((building is FishPond || building.GetType().IsSubclassOf(typeof(FishPond))) && building.modData.ContainsKey(ModEntry.fishPondIdKey))
+                {       
+                    FishPond pond = (FishPond)building;                   
+                    string pondData = pond.modData[ModEntry.fishPondIdKey];
+                    int randomIndex = Game1.random.Next(pondData.Length);
+                    fishQuality = int.Parse(pondData[randomIndex].ToString());
+                    pond.modData[ModEntry.fishPondIdKey] = pondData.Remove(randomIndex, 1);
+                    return;
+                }
             }         
         }
     }
