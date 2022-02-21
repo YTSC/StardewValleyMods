@@ -52,7 +52,7 @@ namespace QualityFishPonds.Patch
                     }
                     else
                     {
-                        if (random < (pondData.Count(x => x == '4') * (Game1.player.LuckLevel / 10)) / (2 * pondData.Count(x => int.TryParse(x.ToString(), out int result) == true)))
+                        if (Game1.player.professions.Contains(8) && random < (pondData.Count(x => x == '4') * (Game1.player.LuckLevel / 10)) / (2 * pondData.Count(x => int.TryParse(x.ToString(), out int result) == true)))
                             pondData += "4";
                         if (random < 0.33)
                             pondData += "2";
