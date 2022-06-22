@@ -10,18 +10,14 @@ using System.Xml.Serialization;
 
 namespace EnhancedSlingshots.Enchantments
 {
+	//50% more damage to insect enemies
 	[XmlType("Mods_ytsc_BugKillerEnchantment")]
 	public class BugKillerEnchantment : BaseEnchantment
-	{
-		//50% more damage to insect enemies
+	{		
 		public override bool CanApplyTo(Item item)
 		{
-			if (item is Slingshot)
-				return true;
-
-			return false;
+			return item is Slingshot;
 		}
-
 		protected override void _OnDealDamage(Monster monster, GameLocation location, Farmer who, ref int amount)
 		{
 			if (monster is Grub || monster is Fly || monster is Bug || monster is Leaper || monster is LavaCrab || monster is RockCrab)

@@ -22,25 +22,23 @@ namespace EnhancedSlingshots.Patch
             Monitor = monitor;
         }
 
+		private static AccessTools.FieldRef<Tool, Farmer> lastUser = AccessTools.FieldRefAccess<Tool, Farmer>("lastUser");
+
 		[HarmonyPostfix]
 		[HarmonyPatch(nameof(Tool.Forge))]
 		public static void Forge_Postfix(Tool __instance, ref bool __result, Item item, bool count_towards_stats = false)
         {			
 			BaseEnchantment enchantment = BaseEnchantment.GetEnchantmentFromItem(__instance, item);
-			if (__instance is Slingshot && enchantment != null)
+			if (__instance is Slingshot sling &&  sling.InitialParentTileIndex == Slingshot.galaxySlingshot && enchantment != null)
 			{
-				if (enchantment is GalaxySoulEnchantment && __instance is Slingshot sling && sling.CurrentParentTileIndex == 34 && sling.GetEnchantmentLevel<GalaxySoulEnchantment>() >= 3)
+				if (enchantment is GalaxySoulEnchantment && sling.GetEnchantmentLevel<GalaxySoulEnchantment>() >= 3)
 				{
-					__instance.CurrentParentTileIndex = ModEntry.Instance.config.InfinitySlingshotId;
-					__instance.InitialParentTileIndex = ModEntry.Instance.config.InfinitySlingshotId;
-					__instance.IndexOfMenuItemView = ModEntry.Instance.config.InfinitySlingshotId;
-					string[] slingData = Game1.content.Load<Dictionary<int, string>>("Data\\weapons")[__instance.InitialParentTileIndex].Split('/');
-					__instance.BaseName = slingData[0];
-					__instance.description = slingData[1];
+					__instance.IndexOfMenuItemView = __instance.InitialParentTileIndex = __instance.CurrentParentTileIndex = ModEntry.Instance.config.InfinitySlingshotId;					
+					__instance.BaseName = ModEntry.Instance.i18n.Get("InfinitySlingshotName");
+					__instance.description = ModEntry.Instance.i18n.Get("InfinitySlingshotDescription");
 
 					GalaxySoulEnchantment enchant = __instance.GetEnchantmentOfType<GalaxySoulEnchantment>();
-					if (enchant != null)					
-						__instance.RemoveEnchantment(enchant);
+					if (enchant != null) __instance.RemoveEnchantment(enchant);
 									
 				}
 				if (count_towards_stats && !enchantment.IsForge())
@@ -55,7 +53,6 @@ namespace EnhancedSlingshots.Patch
 				__result = true;
 				return;
 			}
-			__result = false;
 			return;
 		}
 
@@ -63,17 +60,14 @@ namespace EnhancedSlingshots.Patch
 		[HarmonyPatch(nameof(Tool.AddEnchantment))]
 		public static void AddEnchantment_Postfix(Tool __instance, ref bool __result, BaseEnchantment enchantment)
 		{
-			if (enchantment != null && __instance is Slingshot && enchantment.IsSecondaryEnchantment())
+			if (__instance is Slingshot sling && enchantment != null && enchantment.IsSecondaryEnchantment())
 			{
-				var lastUser = AccessTools.FieldRefAccess<Tool, Farmer>("lastUser");
-
-				//__instance.RemoveEnchantment(enchantment);
 				__instance.enchantments.Remove(enchantment);
 				enchantment.UnapplyTo(__instance, lastUser(__instance));
 
 				foreach (BaseEnchantment existing_enchantment in __instance.enchantments)
 				{
-					if (enchantment.GetType() == existing_enchantment.GetType())
+					if (existing_enchantment is GalaxySoulEnchantment)
 					{
 						if (existing_enchantment.GetMaximumLevel() < 0 || existing_enchantment.GetLevel() < existing_enchantment.GetMaximumLevel())
 						{

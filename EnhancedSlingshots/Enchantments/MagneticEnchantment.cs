@@ -9,9 +9,9 @@ using System.Xml.Serialization;
 
 namespace EnhancedSlingshots.Enchantments
 {
-    //drops 1 more ore
-    [XmlType("Mods_ytsc_MinerEnchantment")]
-    public class MinerEnchantment : BaseEnchantment
+    //projectile collides with ores
+    [XmlType("Mods_ytsc_MagneticEnchantment")]
+    public class MagneticEnchantment : BaseEnchantment
     {
         public override bool CanApplyTo(Item item)
         {
@@ -20,7 +20,7 @@ namespace EnhancedSlingshots.Enchantments
 
         public override string GetName()
         {
-            return ModEntry.Instance.i18n.Get("MinerEnchantment");
+            return ModEntry.Instance.i18n.Get("MagneticEnchantment");
         }
     }
 }

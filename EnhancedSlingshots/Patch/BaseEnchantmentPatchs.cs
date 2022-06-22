@@ -25,7 +25,7 @@ namespace EnhancedSlingshots.Patch
         [HarmonyPatch(nameof(BaseEnchantment.GetEnchantmentFromItem))]
         public static void GetEnchantmentFromItem_Postfix(ref BaseEnchantment __result, Item base_item, Item item)
         {        
-            if (base_item != null && base_item is Slingshot sling && sling.CurrentParentTileIndex == 34 && Utility.IsNormalObjectAtParentSheetIndex(item, 896))
+            if (base_item != null && base_item is Slingshot sling && sling.InitialParentTileIndex == Slingshot.galaxySlingshot && Utility.IsNormalObjectAtParentSheetIndex(item, 896))
                 __result = new GalaxySoulEnchantment();            
         }
 
@@ -33,16 +33,19 @@ namespace EnhancedSlingshots.Patch
         [HarmonyPatch(nameof(BaseEnchantment.GetAvailableEnchantments))]
         public static void GetAvailableEnchantments_Postfix(ref List<BaseEnchantment> __result)
         {
-            //__result.Add(new PotentEnchantment());
-            __result.Add(new AutomatedEnchantment());          
-            __result.Add(new ExpertEnchantment());
-            __result.Add(new HunterEnchantment());            
-            __result.Add(new MinerEnchantment());          
-            __result.Add(new PreciseEnchantment());
-            __result.Add(new SwiftEnchantment());
-            __result.Add(new Enchantments.PreservingEnchantment());
-            __result.Add(new Enchantments.BugKillerEnchantment());
-            __result.Add(new Enchantments.VampiricEnchantment());
+            __result.AddRange(new List<BaseEnchantment>()
+            {
+                //new PotentEnchantment(),
+                new MagneticEnchantment(),
+                new AutomatedEnchantment(),
+                new ExpertEnchantment(),
+                new MinerEnchantment(),
+                new PreciseEnchantment(),
+                new SwiftEnchantment(),
+                new Enchantments.PreservingEnchantment(),
+                new Enchantments.BugKillerEnchantment(),
+                new Enchantments.VampiricEnchantment()
+            });
         }
     }
 }

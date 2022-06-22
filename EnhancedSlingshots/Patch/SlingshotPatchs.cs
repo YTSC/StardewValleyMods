@@ -25,6 +25,18 @@ namespace EnhancedSlingshots.Patch
             Monitor = monitor;
         }
 
+		private static AccessTools.FieldRef<Slingshot, NetPoint> aimPos = AccessTools.FieldRefAccess<Slingshot, NetPoint>("aimPos");
+		private static AccessTools.FieldRef<Slingshot, bool> canPlaySound = AccessTools.FieldRefAccess<Slingshot, bool>("canPlaySound");
+		private static MethodInfo updateAimPosMethod = typeof(Slingshot).GetMethod("updateAimPos", BindingFlags.NonPublic | BindingFlags.Instance);
+
+		[HarmonyPostfix]
+		[HarmonyPatch(nameof(Slingshot.canThisBeAttached))]
+		public static void canThisBeAttached_Postfix(Slingshot __instance, ref bool __result, StardewValley.Object o)
+		{
+			if (o.ParentSheetIndex == 909)
+				__result = true;
+		}
+
 		[HarmonyPostfix]
 		[HarmonyPatch(nameof(Slingshot.GetAutoFireRate))]
 		public static void GetAutoFireRate_Postfix(Slingshot __instance, ref float __result)
@@ -48,11 +60,7 @@ namespace EnhancedSlingshots.Patch
 			if (__instance != null &&
 			    (__instance.hasEnchantmentOfType<Enchantments.PreservingEnchantment>() ||				
 				 __instance.hasEnchantmentOfType<SwiftEnchantment>()))
-            {
-                AccessTools.FieldRef<Slingshot, NetPoint> aimPos = AccessTools.FieldRefAccess<Slingshot, NetPoint>("aimPos");
-                AccessTools.FieldRef<Slingshot, bool> canPlaySound = AccessTools.FieldRefAccess<Slingshot, bool>("canPlaySound");
-				var updateAimPosMethod = typeof(Slingshot).GetMethod("updateAimPos", BindingFlags.NonPublic | BindingFlags.Instance);
-				
+            {				
 				if (__instance.attachments[0] != null)
 				{
 					updateAimPosMethod.Invoke(__instance, null);
@@ -75,9 +83,9 @@ namespace EnhancedSlingshots.Patch
 						string collisionSound = "hammer";
 
 						float damageMod = 1f;
-						if (__instance.InitialParentTileIndex == 33)						
+						if (__instance.InitialParentTileIndex == Slingshot.masterSlingshot)						
 							damageMod = 2f;						
-						else if (__instance.InitialParentTileIndex == 34)
+						else if (__instance.InitialParentTileIndex == Slingshot.galaxySlingshot)
 							damageMod = 3f; //new damage						
 						else if (__instance.InitialParentTileIndex == ModEntry.Instance.config.InfinitySlingshotId) //Infinity Sling
                         	damageMod = 4f;
@@ -111,6 +119,9 @@ namespace EnhancedSlingshots.Patch
 							case 386:
 								damage = 50;
 								ammunition.ParentSheetIndex++;
+								break;
+							case 909:
+								damage = 75;								
 								break;
 							case 441:
 								damage = 20;
@@ -194,8 +205,7 @@ namespace EnhancedSlingshots.Patch
                     }
                 }
                 else
-                {					
-					bool exit = false;
+                {	
 					foreach(Item item in who.Items)
                     {
 						switch (item?.ParentSheetIndex)
@@ -207,15 +217,13 @@ namespace EnhancedSlingshots.Patch
 							case 384:
 							case 382:
 							case 386:
-							case 441:								
+							case 441:
+							case 909:
 								__instance.attachments[0] = (StardewValley.Object)item;
 								who.Items[who.Items.IndexOf(item)] = null;
-								exit = true;
-								break;							
+								return;							
 						}
-						if (exit) break;
-					}					
-					                    
+					}                  
                 }
             }                   
         }

@@ -12,21 +12,13 @@ using System.Xml.Serialization;
 
 namespace EnhancedSlingshots.Enchantments
 {
-    //recover health on monster kill
+    //chance of recover health on monster kill
     [XmlType("Mods_ytsc_VampiricEnchantment")]
     public class VampiricEnchantment : BaseEnchantment
     {
         public override bool CanApplyTo(Item item)
         {
-            if (item is Slingshot)
-                return true;
-
-            return false;
-        }
-
-        protected override void _OnDealDamage(Monster monster, GameLocation location, Farmer who, ref int amount)
-        {
-          
+            return item is Slingshot;           
         }
 
         protected override void _OnMonsterSlay(Monster m, GameLocation location, Farmer who)

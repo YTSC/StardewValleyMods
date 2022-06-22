@@ -15,12 +15,8 @@ namespace EnhancedSlingshots.Enchantments
     {
         public override bool CanApplyTo(Item item)
         {
-            if (item is Slingshot)
-                return true;
-
-            return false;
+            return item is Slingshot;
         }
-
 
         public override string GetName()
         {

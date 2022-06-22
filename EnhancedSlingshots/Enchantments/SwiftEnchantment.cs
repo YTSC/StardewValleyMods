@@ -9,18 +9,14 @@ using System.Xml.Serialization;
 
 namespace EnhancedSlingshots.Enchantments
 {
-    //fire 2x faster
+    //projectile is 2x faster
     [XmlType("Mods_ytsc_SwiftEnchantment")]
     public class SwiftEnchantment : BaseEnchantment
     {
         public override bool CanApplyTo(Item item)
         {
-            if (item is Slingshot)
-                return true;
-
-            return false;
+            return item is Slingshot;
         }
-
 
         public override string GetName()
         {

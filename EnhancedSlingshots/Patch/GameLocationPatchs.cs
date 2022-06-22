@@ -46,14 +46,10 @@ namespace EnhancedSlingshots.Patch
 				for (int k = 0; k < objects.Count; k++)
 				{
 					int objectToAdd = objects[k];
-					if (objectToAdd < 0)
-					{
+					if (objectToAdd < 0)					
 						__instance.debris.Add(monster.ModifyMonsterLoot(new Debris(Math.Abs(objectToAdd), Game1.random.Next(1, 4), new Vector2(x, y), playerPosition)));
-					}
-					else
-					{
+					else					
 						__instance.debris.Add(monster.ModifyMonsterLoot(new Debris(objectToAdd, new Vector2(x, y), playerPosition)));
-					}
 				}
 			}
 		}
@@ -64,58 +60,58 @@ namespace EnhancedSlingshots.Patch
         {
 			if (who.CurrentTool is Slingshot sling && sling.hasEnchantmentOfType<MinerEnchantment>())
             {
-				switch (indexOfStone)
+                switch (indexOfStone)
                 {
-					case 95:
-						Game1.createObjectDebris(909, x, y, who.UniqueMultiplayerID, __instance);
-						break;
-					case 75:
-						Game1.createObjectDebris(535, x, y, who.UniqueMultiplayerID, __instance);						
-						break;
-					case 76:
-						Game1.createObjectDebris(536, x, y, who.UniqueMultiplayerID, __instance);						
-						break;
-					case 77:
-						Game1.createObjectDebris(537, x, y, who.UniqueMultiplayerID, __instance);						
-						break;
-					case 819:
-						Game1.createObjectDebris(749, x, y, who.UniqueMultiplayerID, __instance);						
-						break;
-					case 8:
-						Game1.createObjectDebris(66, x, y, who.UniqueMultiplayerID, __instance);						
-						break;
-					case 10:
-						Game1.createObjectDebris(68, x, y, who.UniqueMultiplayerID, __instance);						
-						break;
-					case 12:
-						Game1.createObjectDebris(60, x, y, who.UniqueMultiplayerID, __instance);					
-						break;
-					case 14:
-						Game1.createObjectDebris(62, x, y, who.UniqueMultiplayerID, __instance);						
-						break;
-					case 6:
-						Game1.createObjectDebris(70, x, y, who.UniqueMultiplayerID, __instance);						
-						break;
-					case 4:
-						Game1.createObjectDebris(64, x, y, who.UniqueMultiplayerID, __instance);						
-						break;
-					case 2:
+					case 2: //Diamond
 						Game1.createObjectDebris(72, x, y, who.UniqueMultiplayerID, __instance);						
-						break;
-					case 751:
-					case 849:
-						Game1.createObjectDebris(378, x, y, who.UniqueMultiplayerID, __instance);
-						break;
-					case 290:
-					case 850:
+						return;
+					case 4: //Ruby
+						Game1.createObjectDebris(64, x, y, who.UniqueMultiplayerID, __instance);
+						return;
+					case 6: //Jade
+						Game1.createObjectDebris(70, x, y, who.UniqueMultiplayerID, __instance);
+						return;
+					case 8: //Amethyst
+						Game1.createObjectDebris(66, x, y, who.UniqueMultiplayerID, __instance);
+						return;
+					case 10: //Topaz
+						Game1.createObjectDebris(68, x, y, who.UniqueMultiplayerID, __instance);
+						return;
+					case 12: //Emerald
+						Game1.createObjectDebris(60, x, y, who.UniqueMultiplayerID, __instance);
+						return;
+					case 14: //Aquamarine
+						Game1.createObjectDebris(62, x, y, who.UniqueMultiplayerID, __instance);
+						return;
+					case 75: //Geode
+						Game1.createObjectDebris(535, x, y, who.UniqueMultiplayerID, __instance);
+						return;
+					case 76: //Frozen Geode
+						Game1.createObjectDebris(536, x, y, who.UniqueMultiplayerID, __instance);
+						return;
+					case 77: //Magma Geode
+						Game1.createObjectDebris(537, x, y, who.UniqueMultiplayerID, __instance);
+						return;
+					case 95: //Radioactive ore
+						Game1.createObjectDebris(909, x, y, who.UniqueMultiplayerID, __instance);
+						return;
+					case 290: //Iron ore
+					case 850: //Iron ore (volcano version)
 						Game1.createObjectDebris(380, x, y, who.UniqueMultiplayerID, __instance);
-						break;
-					case 764:
+						return;
+					case 751: //Copper ore
+					case 849: //Copper ore (volcano version)  
+						Game1.createObjectDebris(378, x, y, who.UniqueMultiplayerID, __instance);
+						return;
+					case 764: //Gold ore
 						Game1.createObjectDebris(384, x, y, who.UniqueMultiplayerID, __instance);
-						break;
-					case 765:
+						return;
+					case 765: //Iridium ore
 						Game1.createObjectDebris(386, x, y, who.UniqueMultiplayerID, __instance);
-						break;
+						return;
+					case 819: //Omnigeode
+						Game1.createObjectDebris(749, x, y, who.UniqueMultiplayerID, __instance);
+						return;
 				}
 			}
         }

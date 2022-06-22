@@ -16,10 +16,7 @@ namespace EnhancedSlingshots.Enchantments
     {
         public override bool CanApplyTo(Item item)
         {
-            if (item is Slingshot)
-                return true;
-
-            return false;
+            return item is Slingshot;
         }
         protected override void _OnDealDamage(Monster monster, GameLocation location, Farmer who, ref int amount)
         {
