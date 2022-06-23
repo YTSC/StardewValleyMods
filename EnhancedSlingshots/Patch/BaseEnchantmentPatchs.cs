@@ -35,10 +35,11 @@ namespace EnhancedSlingshots.Patch
         {
             __result.AddRange(new List<BaseEnchantment>()
             {
-                //new PotentEnchantment(),
+                //new GeminiEnchantment(),
                 new MagneticEnchantment(),
                 new AutomatedEnchantment(),
                 new ExpertEnchantment(),
+                new HunterEnchantment(),
                 new MinerEnchantment(),
                 new PreciseEnchantment(),
                 new SwiftEnchantment(),

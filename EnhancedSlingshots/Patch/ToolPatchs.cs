@@ -52,8 +52,7 @@ namespace EnhancedSlingshots.Patch
 				}
 				__result = true;
 				return;
-			}
-			return;
+			}			
 		}
 
 		[HarmonyPostfix]

@@ -9,9 +9,9 @@ using System.Xml.Serialization;
 
 namespace EnhancedSlingshots.Enchantments
 {
-    //deals 50% more damage
-    [XmlType("Mods_ytsc_PotentEnchantment")]
-    public class PotentEnchantment : BaseEnchantment
+    //shoots +1 projectile
+    [XmlType("Mods_ytsc_GeminiEnchantment")]
+    public class GeminiEnchantment : BaseEnchantment
     {
         public override bool CanApplyTo(Item item)
         {
@@ -20,7 +20,7 @@ namespace EnhancedSlingshots.Enchantments
 
         public override string GetName()
         {
-            return ModEntry.Instance.i18n.Get("PotentEnchantment");
+            return ModEntry.Instance.i18n.Get("GeminiEnchantment");
         }
     }
 }

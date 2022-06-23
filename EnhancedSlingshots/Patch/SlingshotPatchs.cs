@@ -31,9 +31,9 @@ namespace EnhancedSlingshots.Patch
 
 		[HarmonyPostfix]
 		[HarmonyPatch(nameof(Slingshot.canThisBeAttached))]
-		public static void canThisBeAttached_Postfix(Slingshot __instance, ref bool __result, StardewValley.Object o)
+		public static void canThisBeAttached_Postfix(ref bool __result, StardewValley.Object o)
 		{
-			if (o.ParentSheetIndex == 909)
+			if (o == null || o.ParentSheetIndex == 909)
 				__result = true;
 		}
 
@@ -56,130 +56,124 @@ namespace EnhancedSlingshots.Patch
 		[HarmonyPrefix]
 		[HarmonyPatch(nameof(Slingshot.PerformFire))]
 		public static bool PerformFire_Prefix(Slingshot __instance, ref GameLocation location, ref Farmer who)
-        {	
-			if (__instance != null &&
-			    (__instance.hasEnchantmentOfType<Enchantments.PreservingEnchantment>() ||				
-				 __instance.hasEnchantmentOfType<SwiftEnchantment>()))
-            {				
-				if (__instance.attachments[0] != null)
+		{
+			if (__instance.attachments[0] != null)
+			{
+				updateAimPosMethod.Invoke(__instance, null);
+				int mouseX = aimPos(__instance).X;
+				int mouseY = aimPos(__instance).Y;
+				int backArmDistance = __instance.GetBackArmDistance(who);
+				Vector2 shoot_origin = __instance.GetShootOrigin(who);
+				Vector2 v = Utility.getVelocityTowardPoint(__instance.GetShootOrigin(who), __instance.AdjustForHeight(new Vector2(mouseX, mouseY)), (15 + Game1.random.Next(4, 6)) * (1f + who.weaponSpeedModifier));
+				if (backArmDistance > 4 && !canPlaySound(__instance))
 				{
-					updateAimPosMethod.Invoke(__instance, null);
-					int mouseX = aimPos(__instance).X;
-					int mouseY = aimPos(__instance).Y;
-					int backArmDistance = __instance.GetBackArmDistance(who);
-                    Vector2 shoot_origin = __instance.GetShootOrigin(who);
-                    Vector2 v = Utility.getVelocityTowardPoint(__instance.GetShootOrigin(who), __instance.AdjustForHeight(new Vector2(mouseX, mouseY)), (15 + Game1.random.Next(4, 6)) * (1f + who.weaponSpeedModifier));
-					if (backArmDistance > 4 && !canPlaySound(__instance))
+					StardewValley.Object ammunition = (StardewValley.Object)__instance.attachments[0].getOne();
+					__instance.attachments[0].Stack--;
+
+					if (__instance.hasEnchantmentOfType<Enchantments.PreservingEnchantment>() && Game1.random.NextDouble() < 0.5)
+						__instance.attachments[0].Stack++;
+
+					if (__instance.attachments[0].Stack <= 0)
+						__instance.attachments[0] = null;
+
+					int damage = 1;
+					BasicProjectile.onCollisionBehavior collisionBehavior = null;
+					string collisionSound = "hammer";
+
+					float damageMod = 1f;
+					if (__instance.InitialParentTileIndex == Slingshot.masterSlingshot)
+						damageMod = 2f;
+					else if (__instance.InitialParentTileIndex == Slingshot.galaxySlingshot)
+						damageMod = 3f; //new damage						
+					else if (__instance.InitialParentTileIndex == ModEntry.Instance.config.InfinitySlingshotId) //Infinity Sling
+						damageMod = 4f;
+
+					switch (ammunition.ParentSheetIndex)
 					{
-                        StardewValley.Object ammunition = (StardewValley.Object)__instance.attachments[0].getOne();
-						if (__instance.hasEnchantmentOfType<Enchantments.PreservingEnchantment>() && Game1.random.NextDouble() < 0.5)
-							__instance.attachments[0].Stack--;
-
-						if (__instance.attachments[0].Stack <= 0)						
-							__instance.attachments[0] = null;
-						
-						int damage = 1;
-                        BasicProjectile.onCollisionBehavior collisionBehavior = null;
-						string collisionSound = "hammer";
-
-						float damageMod = 1f;
-						if (__instance.InitialParentTileIndex == Slingshot.masterSlingshot)						
-							damageMod = 2f;						
-						else if (__instance.InitialParentTileIndex == Slingshot.galaxySlingshot)
-							damageMod = 3f; //new damage						
-						else if (__instance.InitialParentTileIndex == ModEntry.Instance.config.InfinitySlingshotId) //Infinity Sling
-                        	damageMod = 4f;
-						
-						switch (ammunition.ParentSheetIndex)
-						{
-							case 388:
-								damage = 2;
-								ammunition.ParentSheetIndex++;
-								break;
-							case 390:
-								damage = 5;
-								ammunition.ParentSheetIndex++;
-								break;
-							case 378:
-								damage = 10;
-								ammunition.ParentSheetIndex++;
-								break;
-							case 380:
-								damage = 20;
-								ammunition.ParentSheetIndex++;
-								break;
-							case 384:
-								damage = 30;
-								ammunition.ParentSheetIndex++;
-								break;
-							case 382:
-								damage = 15;
-								ammunition.ParentSheetIndex++;
-								break;
-							case 386:
-								damage = 50;
-								ammunition.ParentSheetIndex++;
-								break;
-							case 909:
-								damage = 75;								
-								break;
-							case 441:
-								damage = 20;
-								collisionBehavior = BasicProjectile.explodeOnImpact;								
-								collisionSound = "explosion";
-								break;
-						}
-
-						if (ammunition.Category == -5)						
-							collisionSound = "slimedead";
-						
-						if (!Game1.options.useLegacySlingshotFiring)
-						{
-							v.X *= -1f;
-							v.Y *= -1f;
-						}
-
-						if (__instance.hasEnchantmentOfType<SwiftEnchantment>())
-						{
-							v.X *= 2;
-							v.Y *= 2;
-						}
-
-                        BasicProjectile projectile = new BasicProjectile(
-							(int)(damageMod * (damage + Game1.random.Next(-(damage / 2), damage + 2)) * (1f + who.attackIncreaseModifier)),
-							ammunition.ParentSheetIndex,
-							0,
-							0,
-							(float)(Math.PI / (64f + Game1.random.Next(-63, 64))),
-							0f - v.X,
-							0f - v.Y,
-							shoot_origin - new Vector2(32f, 32f),
-							collisionSound,
-							"",
-							explode: false,
-							damagesMonsters: true,
-							location,
-							who,
-							spriteFromObjectSheet: true,
-							collisionBehavior)
-						{
-							IgnoreLocationCollision = (Game1.currentLocation.currentEvent != null || Game1.currentMinigame != null)
-						};
-
-						location.projectiles.Add(projectile);
+						case 388:
+							damage = 2;
+							ammunition.ParentSheetIndex++;
+							break;
+						case 390:
+							damage = 5;
+							ammunition.ParentSheetIndex++;
+							break;
+						case 378:
+							damage = 10;
+							ammunition.ParentSheetIndex++;
+							break;
+						case 380:
+							damage = 20;
+							ammunition.ParentSheetIndex++;
+							break;
+						case 384:
+							damage = 30;
+							ammunition.ParentSheetIndex++;
+							break;
+						case 382:
+							damage = 15;
+							ammunition.ParentSheetIndex++;
+							break;
+						case 386:
+							damage = 50;
+							ammunition.ParentSheetIndex++;
+							break;
+						case 909:
+							damage = 75;
+							break;
+						case 441:
+							damage = 20;
+							collisionBehavior = BasicProjectile.explodeOnImpact;
+							collisionSound = "explosion";
+							break;
 					}
+
+					if (ammunition.Category == -5)
+						collisionSound = "slimedead";
+
+					if (!Game1.options.useLegacySlingshotFiring)
+					{
+						v.X *= -1f;
+						v.Y *= -1f;
+					}
+
+					if (__instance.hasEnchantmentOfType<SwiftEnchantment>())
+					{
+						v.X *= 2;
+						v.Y *= 2;
+					}
+
+					BasicProjectile projectile = new BasicProjectile(
+						(int)(damageMod * (damage + Game1.random.Next(-(damage / 2), damage + 2)) * (1f + who.attackIncreaseModifier)),
+						ammunition.ParentSheetIndex,
+						0,
+						0,
+						(float)(Math.PI / (64f + Game1.random.Next(-63, 64))),
+						0f - v.X,
+						0f - v.Y,
+						shoot_origin - new Vector2(32f, 32f),
+						collisionSound,
+						"",
+						explode: false,
+						damagesMonsters: true,
+						location,
+						who,
+						spriteFromObjectSheet: true,
+						collisionBehavior)
+					{
+						IgnoreLocationCollision = (Game1.currentLocation.currentEvent != null || Game1.currentMinigame != null)
+					};
+
+					location.projectiles.Add(projectile);
 				}
-				else
-				{
-                    Game1.showRedMessage(Game1.content.LoadString("Strings\\StringsFromCSFiles:Slingshot.cs.14254"));
-				}
-				canPlaySound(__instance) = true;
-				return false;
-            }
-            else			
-				return true;
-			
-        }
+			}
+			else
+			{
+				Game1.showRedMessage(Game1.content.LoadString("Strings\\StringsFromCSFiles:Slingshot.cs.14254"));
+			}
+			canPlaySound(__instance) = true;
+			return false;
+		}
 
 		[HarmonyPostfix]
 		[HarmonyPatch(nameof(Slingshot.PerformFire))]

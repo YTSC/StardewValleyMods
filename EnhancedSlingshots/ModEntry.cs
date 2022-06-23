@@ -40,12 +40,12 @@ namespace EnhancedSlingshots
         {
             ISpaceCoreApi api = Helper.ModRegistry.GetApi<ISpaceCoreApi>("spacechase0.SpaceCore");
             if (api != null)
-            {                
+            {
+                api.RegisterSerializerType(typeof(GeminiEnchantment));
                 api.RegisterSerializerType(typeof(AutomatedEnchantment));
                 api.RegisterSerializerType(typeof(ExpertEnchantment));
                 api.RegisterSerializerType(typeof(HunterEnchantment));
-                api.RegisterSerializerType(typeof(MinerEnchantment));
-                api.RegisterSerializerType(typeof(PotentEnchantment));
+                api.RegisterSerializerType(typeof(MinerEnchantment));               
                 api.RegisterSerializerType(typeof(PreciseEnchantment));
                 api.RegisterSerializerType(typeof(SwiftEnchantment));
                 api.RegisterSerializerType(typeof(MagneticEnchantment));
