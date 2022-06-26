@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace EnhancedSlingshots.Enchantments
+namespace EnhancedSlingshots.Framework.Enchantments
 {
     //extra damage to flying enemies
     [XmlType("Mods_ytsc_PreciseEnchantment")]
@@ -22,7 +22,7 @@ namespace EnhancedSlingshots.Enchantments
         {
             if (monster is Ghost || monster is Bat || monster is Fly || monster is Serpent || monster is BlueSquid || monster is Bug || monster is SquidKid)
             {
-                amount = (int)(amount * 1.5f);
+                amount = (int)(amount * ModEntry.Instance.config.PreciseEnchantment_Damage);
             }
         }
 

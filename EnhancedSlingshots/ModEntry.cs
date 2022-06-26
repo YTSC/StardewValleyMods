@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using EnhancedSlingshots.Patch;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -10,26 +9,27 @@ using System.Reflection;
 using StardewValley.Locations;
 using Microsoft.Xna.Framework.Graphics;
 using SpaceShared.APIs;
-using EnhancedSlingshots.Enchantments;
+using EnhancedSlingshots.Framework.Patch;
+using EnhancedSlingshots.Framework.Enchantments;
 using Microsoft.Xna.Framework;
 
 namespace EnhancedSlingshots
 {
-    public class ModEntry : Mod
+    public class ModEntry : Mod, IAssetEditor
     {
         internal ITranslationHelper i18n => Helper.Translation;
         internal Config config;           
         private Harmony harmony;
         private Texture2D infinitySlingTexture;
         public static ModEntry Instance;
-
+ 
         public override void Entry(IModHelper helper)
         {
             Instance = this;
             harmony = new Harmony(ModManifest.UniqueID);
-            InitializeMonitors();
-
             config = Helper.ReadConfig<Config>();
+            InitializeMonitors();
+           
             infinitySlingTexture = helper.Content.Load<Texture2D>("assets/InfinitySlingshot.png", ContentSource.ModFolder);   
             Helper.Events.Display.MenuChanged += OnMenuChanged;
             Helper.Events.GameLoop.GameLaunched += OnGameLaunched;    
@@ -49,9 +49,9 @@ namespace EnhancedSlingshots
                 api.RegisterSerializerType(typeof(PreciseEnchantment));
                 api.RegisterSerializerType(typeof(SwiftEnchantment));
                 api.RegisterSerializerType(typeof(MagneticEnchantment));
-                api.RegisterSerializerType(typeof(Enchantments.BugKillerEnchantment));
-                api.RegisterSerializerType(typeof(Enchantments.PreservingEnchantment));
-                api.RegisterSerializerType(typeof(Enchantments.VampiricEnchantment));
+                api.RegisterSerializerType(typeof(Framework.Enchantments.BugKillerEnchantment));
+                api.RegisterSerializerType(typeof(Framework.Enchantments.PreservingEnchantment));
+                api.RegisterSerializerType(typeof(Framework.Enchantments.VampiricEnchantment));
             }
         }
 
@@ -88,7 +88,7 @@ namespace EnhancedSlingshots
                 var weapons = asset.AsImage();
                 Rectangle area = GetTargetArea(config.InfinitySlingshotId);
                 weapons.ExtendImage(minWidth: weapons.Data.Width, minHeight: area.Y+16);
-                weapons.PatchImage(infinitySlingTexture, targetArea: area);
+                weapons.PatchImage(infinitySlingTexture, targetArea: area);               
             }
         }
         private Rectangle GetTargetArea(int id)
@@ -98,7 +98,7 @@ namespace EnhancedSlingshots
         
         private void InitializeMonitors()
         {
-            BaseEnchantmentPatchs.Initialize(Monitor);
+            BaseEnchantmentPatchs.Initialize(Monitor);           
             GameLocationPatchs.Initialize(Monitor);
             ProjectilePatchs.Initialize(Monitor);
             SlingshotPatchs.Initialize(Monitor);

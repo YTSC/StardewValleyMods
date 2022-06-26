@@ -8,9 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace EnhancedSlingshots.Enchantments
+namespace EnhancedSlingshots.Framework.Enchantments
 {
-	//50% more damage to insect enemies
+	//more damage to insect enemies
 	[XmlType("Mods_ytsc_BugKillerEnchantment")]
 	public class BugKillerEnchantment : BaseEnchantment
 	{		
@@ -22,7 +22,7 @@ namespace EnhancedSlingshots.Enchantments
 		{
 			if (monster is Grub || monster is Fly || monster is Bug || monster is Leaper || monster is LavaCrab || monster is RockCrab)
 			{
-				amount = (int)(amount * 1.5f);
+				amount = (int)(amount * ModEntry.Instance.config.BugKillerEnchantment_Damage);
 			}
 		}
 

@@ -7,11 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace EnhancedSlingshots.Enchantments
+namespace EnhancedSlingshots.Framework.Enchantments
 {
-    //projectile is 2x faster
-    [XmlType("Mods_ytsc_SwiftEnchantment")]
-    public class SwiftEnchantment : BaseEnchantment
+    //shoots +1 projectile
+    [XmlType("Mods_ytsc_GeminiEnchantment")]
+    public class GeminiEnchantment : BaseEnchantment
     {
         public override bool CanApplyTo(Item item)
         {
@@ -20,7 +20,7 @@ namespace EnhancedSlingshots.Enchantments
 
         public override string GetName()
         {
-            return ModEntry.Instance.i18n.Get("SwiftEnchantment");
+            return ModEntry.Instance.i18n.Get("GeminiEnchantment");
         }
     }
 }

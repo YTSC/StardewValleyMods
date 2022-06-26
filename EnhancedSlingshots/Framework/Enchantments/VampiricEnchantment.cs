@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace EnhancedSlingshots.Enchantments
+namespace EnhancedSlingshots.Framework.Enchantments
 {
     //chance of recover health on monster kill
     [XmlType("Mods_ytsc_VampiricEnchantment")]
@@ -24,7 +24,7 @@ namespace EnhancedSlingshots.Enchantments
         protected override void _OnMonsterSlay(Monster m, GameLocation location, Farmer who)
         {
             Random random = new Random(DateTime.Now.Millisecond);           
-            if (random.NextDouble() < 0.090000003576278687)
+            if (random.NextDouble() < ModEntry.Instance.config.VampiricEnchantment_RecoveryChance)
             {
                 int amount = Math.Max(1, (int)((m.MaxHealth + random.Next(-m.MaxHealth / 10, m.MaxHealth / 15 + 1)) * 0.1f));
                 who.health = Math.Min(who.maxHealth, Game1.player.health + amount);

@@ -1,7 +1,6 @@
-﻿using EnhancedSlingshots.Enchantments;
+﻿using EnhancedSlingshots.Framework.Enchantments;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
-using Netcode;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Network;
@@ -10,10 +9,9 @@ using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SObject = StardewValley.Object;
 
-namespace EnhancedSlingshots.Patch
+namespace EnhancedSlingshots.Framework.Patch
 {
     [HarmonyPatch(typeof(Projectile))]
     public static class ProjectilePatchs
@@ -34,15 +32,14 @@ namespace EnhancedSlingshots.Patch
             var who = theOneWhoFiredMe(__instance).Get(location);
             if (who is Farmer player && player.CurrentTool is Slingshot sling && sling.hasEnchantmentOfType<MagneticEnchantment>())
             {
-                foreach (var obj in location.objects.Pairs)
-                {
-                    if(obj.Value.getBoundingBox(obj.Key).Intersects(__instance.getBoundingBox()) &&
-                        ModEntry.Instance.config.MagneticEnchantmentStones.Contains(location.objects[obj.Key].ParentSheetIndex))
-                    {
-                        __result = true;
-                        return;
-                    }
-                }               
+                var result = location.objects.Pairs.FirstOrDefault(obj => obj.Value.getBoundingBox(obj.Key).Intersects(__instance.getBoundingBox()));
+                if (default(KeyValuePair<Vector2, SObject>).Equals(result))
+                    return;
+
+                if(ModEntry.Instance.config.MagneticEnchantmentStones.Contains(result.Value.ParentSheetIndex))
+                    __result = true;
+                
+                return;
             }           
         }
 

@@ -7,11 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace EnhancedSlingshots.Enchantments
+namespace EnhancedSlingshots.Framework.Enchantments
 {
-    //50% chance no ammo cost (still need 1 ammo)
-    [XmlType("Mods_ytsc_PreservingEnchantment")]
-    public class PreservingEnchantment : BaseEnchantment
+    //projectile collides with ores
+    [XmlType("Mods_ytsc_MagneticEnchantment")]
+    public class MagneticEnchantment : BaseEnchantment
     {
         public override bool CanApplyTo(Item item)
         {
@@ -20,7 +20,7 @@ namespace EnhancedSlingshots.Enchantments
 
         public override string GetName()
         {
-            return ModEntry.Instance.i18n.Get("PreservingEnchantment");
+            return ModEntry.Instance.i18n.Get("MagneticEnchantment");
         }
     }
 }

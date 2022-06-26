@@ -1,19 +1,17 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Netcode;
-using EnhancedSlingshots.Enchantments;
+using EnhancedSlingshots.Framework.Enchantments;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Projectiles;
 using StardewValley.Tools;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using SObject = StardewValley.Object;
 
-namespace EnhancedSlingshots.Patch
+namespace EnhancedSlingshots.Framework.Patch
 {
 	[HarmonyPatch(typeof(Slingshot))]
 	public static class SlingshotPatchs
@@ -31,9 +29,9 @@ namespace EnhancedSlingshots.Patch
 
 		[HarmonyPostfix]
 		[HarmonyPatch(nameof(Slingshot.canThisBeAttached))]
-		public static void canThisBeAttached_Postfix(ref bool __result, StardewValley.Object o)
+		public static void canThisBeAttached_Postfix(ref bool __result, SObject o)
 		{
-			if (o == null || o.ParentSheetIndex == 909)
+			if (o == null || ModEntry.Instance.config.ItemsThatCanBeUsedAsAmmo.Contains(o.ParentSheetIndex))
 				__result = true;
 		}
 
@@ -42,7 +40,7 @@ namespace EnhancedSlingshots.Patch
 		public static void GetAutoFireRate_Postfix(Slingshot __instance, ref float __result)
 		{
 			if (__instance.hasEnchantmentOfType<AutomatedEnchantment>())
-				__result = 0.5f;
+				__result = ModEntry.Instance.config.SlingshotAutoFireRate;
 		}
 
 		[HarmonyPostfix]
@@ -60,34 +58,33 @@ namespace EnhancedSlingshots.Patch
 			if (__instance.attachments[0] != null)
 			{
 				updateAimPosMethod.Invoke(__instance, null);
-				int mouseX = aimPos(__instance).X;
-				int mouseY = aimPos(__instance).Y;
+				Vector2 mousePos = aimPos(__instance).Value.ToVector2();				
 				int backArmDistance = __instance.GetBackArmDistance(who);
 				Vector2 shoot_origin = __instance.GetShootOrigin(who);
-				Vector2 v = Utility.getVelocityTowardPoint(__instance.GetShootOrigin(who), __instance.AdjustForHeight(new Vector2(mouseX, mouseY)), (15 + Game1.random.Next(4, 6)) * (1f + who.weaponSpeedModifier));
+				Vector2 velocity = Utility.getVelocityTowardPoint(__instance.GetShootOrigin(who), __instance.AdjustForHeight(mousePos), (15 + Game1.random.Next(4, 6)) * (1f + who.weaponSpeedModifier));
 				if (backArmDistance > 4 && !canPlaySound(__instance))
 				{
-					StardewValley.Object ammunition = (StardewValley.Object)__instance.attachments[0].getOne();
+					SObject ammunition = (SObject)__instance.attachments[0].getOne();
 					__instance.attachments[0].Stack--;
 
-					if (__instance.hasEnchantmentOfType<Enchantments.PreservingEnchantment>() && Game1.random.NextDouble() < 0.5)
+					if (__instance.hasEnchantmentOfType<Enchantments.PreservingEnchantment>() && Game1.random.NextDouble() < ModEntry.Instance.config.PreciseEnchantment_Damage)
 						__instance.attachments[0].Stack++;
 
 					if (__instance.attachments[0].Stack <= 0)
 						__instance.attachments[0] = null;
-
-					int damage = 1;
+					
 					BasicProjectile.onCollisionBehavior collisionBehavior = null;
 					string collisionSound = "hammer";
 
-					float damageMod = 1f;
+					float damageMod = 1f;				
 					if (__instance.InitialParentTileIndex == Slingshot.masterSlingshot)
 						damageMod = 2f;
 					else if (__instance.InitialParentTileIndex == Slingshot.galaxySlingshot)
-						damageMod = 3f; //new damage						
+						damageMod = 3f; //new galaxy slingshot damage						
 					else if (__instance.InitialParentTileIndex == ModEntry.Instance.config.InfinitySlingshotId) //Infinity Sling
 						damageMod = 4f;
 
+					int damage = 1;
 					switch (ammunition.ParentSheetIndex)
 					{
 						case 388:
@@ -132,16 +129,10 @@ namespace EnhancedSlingshots.Patch
 						collisionSound = "slimedead";
 
 					if (!Game1.options.useLegacySlingshotFiring)
-					{
-						v.X *= -1f;
-						v.Y *= -1f;
-					}
-
+						velocity *= -1f;
+					
 					if (__instance.hasEnchantmentOfType<SwiftEnchantment>())
-					{
-						v.X *= 2;
-						v.Y *= 2;
-					}
+						velocity *= ModEntry.Instance.config.SwiftEnchantment_TimesFaster;					
 
 					BasicProjectile projectile = new BasicProjectile(
 						(int)(damageMod * (damage + Game1.random.Next(-(damage / 2), damage + 2)) * (1f + who.attackIncreaseModifier)),
@@ -149,8 +140,8 @@ namespace EnhancedSlingshots.Patch
 						0,
 						0,
 						(float)(Math.PI / (64f + Game1.random.Next(-63, 64))),
-						0f - v.X,
-						0f - v.Y,
+						0f - velocity.X,
+						0f - velocity.Y,
 						shoot_origin - new Vector2(32f, 32f),
 						collisionSound,
 						"",
@@ -181,41 +172,28 @@ namespace EnhancedSlingshots.Patch
         {			
             if (__instance.hasEnchantmentOfType<ExpertEnchantment>())
             {			
-				if (__instance.attachments[0]?.Stack > 0)
-                {				
-					for (int x = 0; x < who.Items?.Count; x++)
-                    {						
-						if (who.Items[x]?.ParentSheetIndex == __instance.attachments[0]?.ParentSheetIndex &&
-							__instance.attachments[0]?.Stack != __instance.attachments[0]?.maximumStackSize())
-                        {						
-							__instance.attachments[0].Stack++;
-                            who.Items[x].Stack--;
-
-                            if (who.Items[x].Stack <= 0)
-                                who.Items[x] = null;
-
-							break;
-                        }
-                    }
+				if (__instance.attachments[0]?.Stack > 0 && __instance.attachments[0].Stack != __instance.attachments[0].maximumStackSize())
+                {
+					Item item = who.Items.FirstOrDefault(item => item?.ParentSheetIndex == __instance.attachments[0].ParentSheetIndex);
+					if(item != null && item.Stack > 0)
+                    {
+						__instance.attachments[0].Stack++;
+						item.Stack--;
+						if (item.Stack <= 0) item = null;
+						return;
+					}
                 }
                 else
-                {	
+                {
 					foreach(Item item in who.Items)
                     {
-						switch (item?.ParentSheetIndex)
-						{
-							case 388:
-							case 390:
-							case 378:
-							case 380:
-							case 384:
-							case 382:
-							case 386:
-							case 441:
-							case 909:
-								__instance.attachments[0] = (StardewValley.Object)item;
-								who.Items[who.Items.IndexOf(item)] = null;
-								return;							
+						if (item == null || item is not SObject) continue;
+
+                        if (__instance.canThisBeAttached(item as SObject))
+                        {
+							__instance.attachments[0] = (SObject)item;
+							who.Items[who.Items.IndexOf(item)] = null;
+							return;
 						}
 					}                  
                 }

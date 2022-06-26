@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EnhancedSlingshots.Patch
+namespace EnhancedSlingshots.Framework.Patch
 {
 	[HarmonyPatch(typeof(Tool))]
     public static class ToolPatchs

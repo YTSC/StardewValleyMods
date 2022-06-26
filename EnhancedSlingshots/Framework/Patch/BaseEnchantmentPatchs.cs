@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-using EnhancedSlingshots.Enchantments;
+using EnhancedSlingshots.Framework.Enchantments;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Tools;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EnhancedSlingshots.Patch
+namespace EnhancedSlingshots.Framework.Patch
 {
     [HarmonyPatch(typeof(BaseEnchantment))]
     public static class BaseEnchantmentPatchs

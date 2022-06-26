@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using StardewValley;
-using StardewValley.Monsters;
+﻿using StardewValley;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
@@ -9,11 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace EnhancedSlingshots.Enchantments
+namespace EnhancedSlingshots.Framework.Enchantments
 {
-    //monster drops 1 more loot (stack with Burglar's Ring)
-    [XmlType("Mods_ytsc_HunterEnchantment")]
-    public class HunterEnchantment : BaseEnchantment
+    //auto fire on key hold
+    [XmlType("Mods_ytsc_AutomatedEnchantment")]
+    public class AutomatedEnchantment : BaseEnchantment
     {
         public override bool CanApplyTo(Item item)
         {
@@ -22,7 +20,7 @@ namespace EnhancedSlingshots.Enchantments
 
         public override string GetName()
         {
-            return ModEntry.Instance.i18n.Get("HunterEnchantment");
+            return ModEntry.Instance.i18n.Get("AutomatedEnchantment");
         }
     }
 }
