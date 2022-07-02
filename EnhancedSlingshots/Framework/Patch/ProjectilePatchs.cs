@@ -23,23 +23,19 @@ namespace EnhancedSlingshots.Framework.Patch
             Monitor = monitor;
         }
         
-        private static AccessTools.FieldRef<Projectile, NetCharacterRef> theOneWhoFiredMe = AccessTools.FieldRefAccess<Projectile, NetCharacterRef>("theOneWhoFiredMe");
-       
         [HarmonyPostfix]
         [HarmonyPatch(nameof(Projectile.isColliding))]
-        public static void isColliding_Postfix(Projectile __instance, ref bool __result, GameLocation location)
+        public static void isColliding_Postfix(Projectile __instance, ref bool __result, ref NetCharacterRef ___theOneWhoFiredMe, GameLocation location)
         {
-            var who = theOneWhoFiredMe(__instance).Get(location);
+            var who = ___theOneWhoFiredMe.Get(location);
             if (who is Farmer player && player.CurrentTool is Slingshot sling && sling.hasEnchantmentOfType<MagneticEnchantment>())
             {
                 var result = location.objects.Pairs.FirstOrDefault(obj => obj.Value.getBoundingBox(obj.Key).Intersects(__instance.getBoundingBox()));
                 if (default(KeyValuePair<Vector2, SObject>).Equals(result))
                     return;
 
-                if(ModEntry.Instance.config.MagneticEnchantmentStones.Contains(result.Value.ParentSheetIndex))
+                if(ModEntry.Instance.config.MagneticEnchantmentAffectedStones.Contains(result.Value.ParentSheetIndex))
                     __result = true;
-                
-                return;
             }           
         }
 

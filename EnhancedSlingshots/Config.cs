@@ -1,4 +1,5 @@
 ﻿using StardewModdingAPI;
+using System.Collections.Generic;
 
 namespace EnhancedSlingshots
 {
@@ -10,13 +11,13 @@ namespace EnhancedSlingshots
         public float SlingshotAutoFireRate { get; set; }
         public float BugKillerEnchantment_Damage { get; set; }
         public float PreciseEnchantment_Damage { get; set; }
-        public float VampiricEnchantment_RecoveryChance { get; set; }
+        public float VampiricEnchantment_RecoveryChance { get; set; } // 0f to 1f;
         public float PreservingEnchantment_PreserveChance { get; set; } // 0f to 1f;
         public int HunterEnchantment_ExtraDropsAmount { get; set; } 
         public int MinerEnchantment_ExtraDropsAmount { get; set; }          
         public int SwiftEnchantment_TimesFaster { get; set; }    
-        public int[] MagneticEnchantmentStones { get; set; }
-        public int[] ItemsThatCanBeUsedAsAmmo { get; set; }
+        public int[] MagneticEnchantmentAffectedStones { get; set; }
+        public Dictionary<int,int> ItemsThatCanBeUsedAsAmmo { get; set; }
         public Config()
         {
             EnableGalaxySligshot = true;
@@ -30,7 +31,7 @@ namespace EnhancedSlingshots
             PreservingEnchantment_PreserveChance = 0.5f;
             SwiftEnchantment_TimesFaster = 2;
             VampiricEnchantment_RecoveryChance = 0.09f;
-            MagneticEnchantmentStones = new int[]
+            MagneticEnchantmentAffectedStones = new int[]
             {
                  2, //Diamond
                  4, //Ruby
@@ -50,15 +51,33 @@ namespace EnhancedSlingshots
                  764, //Gold ore
                  765, //Iridium ore
                  819, //Omnigeode
-                 843, //Cinder Shard
+                 843, //Cinder Shard 
                  844, //Cinder Shard
                  849, //Copper ore (volcano version)                       
-                 850 //Iron ore (volcano version)
+                 850, //Iron ore (volcano version)
             };
 
-            ItemsThatCanBeUsedAsAmmo = new int[]
+            ItemsThatCanBeUsedAsAmmo = new Dictionary<int, int>()
             {
-                909 //Radioactive ore
+                //Default 
+                { 388, 2 }, //Wood
+                { 390, 5 }, //Stone
+                { 382, 15 }, //Coal
+                { 378, 10 }, //Copper ore               
+                { 380, 20 }, //Iron ore
+                { 384, 30 }, //Gold ore              
+                { 386, 50 }, //Iridum ore
+                { 441, 20 }, //Explosive ammo
+                //New additions
+                { 766, 5 }, //Slime             
+                { 80, 10 }, //Quartz
+                { 82, 20 }, //Fire Quartz
+                { 84, 20 }, //Frozen Tear
+                { 86, 20 }, //Earth Crystal
+                { 557, 35 }, //Petrified Slime
+                { 768, 35 }, //Solar essence
+                { 769, 35 }, //Void essence
+                { 909, 75 }, //Radioactive ore
             };
         }
     }

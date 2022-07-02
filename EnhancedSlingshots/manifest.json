@@ -2,12 +2,12 @@
   "Name": "EnhancedSlingshots",
   "Author": "ytsc",
   "Version": "1.0.0",
-  "Description": "Adds Galaxy Slingshot, Infinity Slingshot and Enchantments for slingshots",
-  "UniqueID": "ytsc.SlingshotEnchantments",
+  "Description": "Adds Galaxy Slingshot, Infinity Slingshot and Enchantments for slingshots. Also permits using more objets as ammo.",
+  "UniqueID": "ytsc.EnhancedSlingshots",
   "EntryDll": "EnhancedSlingshots.dll",
   "MinimumApiVersion": "2.11",
   "UpdateKeys": [ "Nexus:" ],
-  "Dependencies": [    
+  "Dependencies": [
     {
       "UniqueID": "spacechase0.SpaceCore"
     }

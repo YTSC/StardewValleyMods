@@ -7,9 +7,6 @@ using StardewValley.Monsters;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EnhancedSlingshots.Framework.Patch
 {
@@ -35,11 +32,10 @@ namespace EnhancedSlingshots.Framework.Patch
 				if (result != null && result.Length > 0)
 				{
 					string[] objectsSplit = result.Split('/')[6].Split(' ');					
-					for (int l = 0; l < objectsSplit.Length; l += 2)
-					{
+					for (int l = 0; l < objectsSplit.Length; l += 2)					
 						if (Game1.random.NextDouble() < Convert.ToDouble(objectsSplit[l + 1]))													
 							objects.Add(Convert.ToInt32(objectsSplit[l]));	
-					}
+					
 				}
 				for(int i = 0; i < ModEntry.Instance.config.HunterEnchantment_ExtraDropsAmount; i++)
 					__instance.debris.Add(monster.ModifyMonsterLoot(new Debris(Math.Abs(objects[Game1.random.Next(0, objects.Count)]), new Vector2(x, y), playerPosition)));
@@ -48,11 +44,11 @@ namespace EnhancedSlingshots.Framework.Patch
 
 		[HarmonyPostfix]
 		[HarmonyPatch("breakStone")]
-		public static void breakStone_Postfix(GameLocation __instance, int indexOfStone, int x, int y, Farmer who, Random r)
+		public static void breakStone_Postfix(GameLocation __instance, int indexOfStone, int x, int y, Farmer who)
         {
 			if (who.CurrentTool is Slingshot sling && sling.hasEnchantmentOfType<MinerEnchantment>())
             {
-				for(int i = 0; i < ModEntry.Instance.config.MinerEnchantment_ExtraDropsAmount; x++)
+				for(int i = 0; i < ModEntry.Instance.config.MinerEnchantment_ExtraDropsAmount; i++)
                 {
 					switch (indexOfStone)
 					{

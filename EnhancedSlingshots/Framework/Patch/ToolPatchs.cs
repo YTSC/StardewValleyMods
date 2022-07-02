@@ -1,14 +1,7 @@
 ﻿using HarmonyLib;
-using Netcode;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Tools;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EnhancedSlingshots.Framework.Patch
 {
@@ -22,19 +15,18 @@ namespace EnhancedSlingshots.Framework.Patch
             Monitor = monitor;
         }
 
-		private static AccessTools.FieldRef<Tool, Farmer> lastUser = AccessTools.FieldRefAccess<Tool, Farmer>("lastUser");
-
 		[HarmonyPostfix]
 		[HarmonyPatch(nameof(Tool.Forge))]
-		public static void Forge_Postfix(Tool __instance, ref bool __result, Item item, bool count_towards_stats = false)
-        {			
-			BaseEnchantment enchantment = BaseEnchantment.GetEnchantmentFromItem(__instance, item);
-			if (__instance is Slingshot sling &&  sling.InitialParentTileIndex == Slingshot.galaxySlingshot && enchantment != null)
+		public static void Forge_Postfix(Tool __instance, ref bool __result, Item item, bool count_towards_stats)
+        {						
+			if (__instance is Slingshot sling &&  sling.InitialParentTileIndex == Slingshot.galaxySlingshot)
 			{
+				BaseEnchantment enchantment = BaseEnchantment.GetEnchantmentFromItem(__instance, item);
 				if (enchantment is GalaxySoulEnchantment && sling.GetEnchantmentLevel<GalaxySoulEnchantment>() >= 3)
 				{
-					__instance.IndexOfMenuItemView = __instance.InitialParentTileIndex = __instance.CurrentParentTileIndex = ModEntry.Instance.config.InfinitySlingshotId;					
-					__instance.BaseName = ModEntry.Instance.i18n.Get("InfinitySlingshotName");
+					__instance.IndexOfMenuItemView = __instance.InitialParentTileIndex = __instance.CurrentParentTileIndex = ModEntry.Instance.config.InfinitySlingshotId;
+					__instance.BaseName = "Infinity Slingshot";
+					__instance.DisplayName = ModEntry.Instance.i18n.Get("InfinitySlingshotName");
 					__instance.description = ModEntry.Instance.i18n.Get("InfinitySlingshotDescription");
 
 					GalaxySoulEnchantment enchant = __instance.GetEnchantmentOfType<GalaxySoulEnchantment>();
@@ -44,10 +36,9 @@ namespace EnhancedSlingshots.Framework.Patch
 				if (count_towards_stats && !enchantment.IsForge())
 				{
 					__instance.previousEnchantments.Insert(0, enchantment.GetName());
-					while (__instance.previousEnchantments.Count > 2)
-					{
+					while (__instance.previousEnchantments.Count > 2)					
 						__instance.previousEnchantments.RemoveAt(__instance.previousEnchantments.Count - 1);
-					}
+					
 					Game1.stats.incrementStat("timesEnchanted", 1);
 				}
 				__result = true;
@@ -57,12 +48,12 @@ namespace EnhancedSlingshots.Framework.Patch
 
 		[HarmonyPostfix]
 		[HarmonyPatch(nameof(Tool.AddEnchantment))]
-		public static void AddEnchantment_Postfix(Tool __instance, ref bool __result, BaseEnchantment enchantment)
+		public static void AddEnchantment_Postfix(Tool __instance, ref bool __result, Farmer ___lastUser, BaseEnchantment enchantment)
 		{
-			if (__instance is Slingshot sling && enchantment != null && enchantment.IsSecondaryEnchantment())
+			if (__instance is Slingshot && enchantment != null && enchantment.IsSecondaryEnchantment())
 			{
 				__instance.enchantments.Remove(enchantment);
-				enchantment.UnapplyTo(__instance, lastUser(__instance));
+				enchantment.UnapplyTo(__instance, ___lastUser);
 
 				foreach (BaseEnchantment existing_enchantment in __instance.enchantments)
 				{
@@ -79,7 +70,7 @@ namespace EnhancedSlingshots.Framework.Patch
 					}
 				}		
 				__instance.enchantments.Add(enchantment);
-				enchantment.ApplyTo(__instance, lastUser(__instance));
+				enchantment.ApplyTo(__instance, ___lastUser);
 				__result = true;
 				return;
 			}
