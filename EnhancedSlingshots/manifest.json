@@ -6,10 +6,5 @@
   "UniqueID": "ytsc.EnhancedSlingshots",
   "EntryDll": "EnhancedSlingshots.dll",
   "MinimumApiVersion": "2.11",
-  "UpdateKeys": [ "Nexus:" ],
-  "Dependencies": [
-    {
-      "UniqueID": "spacechase0.SpaceCore"
-    }
-  ]
+  "UpdateKeys": [ "Nexus:" ]  
 }

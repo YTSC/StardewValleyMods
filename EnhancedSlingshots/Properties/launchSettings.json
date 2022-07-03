@@ -2,7 +2,7 @@
   "profiles": {
     "EnhancedSlingshots": {
       "commandName": "Project",
-      "commandLineArgs": " --mods-path \"Mods teste\""
+      "commandLineArgs": " --mods-path \"ModsTeste\""
     }
   }
 }
