@@ -8,7 +8,6 @@ using System.Reflection;
 using StardewValley.Locations;
 using Microsoft.Xna.Framework.Graphics;
 using EnhancedSlingshots.Framework.Patch;
-using EnhancedSlingshots.Framework.Enchantments;
 using Microsoft.Xna.Framework;
 using System;
 using EnhancedSlingshots.Framework;
@@ -22,8 +21,7 @@ namespace EnhancedSlingshots
         internal Config config;
         private Harmony harmony;
         private Texture2D InfinitySlingTexture;
-        private string EnchantmentsKey => $"{ModManifest.UniqueID}_ToolEnchantments";       
-        private List<Tool> changedTools;
+        private string EnchantmentsKey => $"{ModManifest.UniqueID}_ToolEnchantments"; 
         public static ModEntry Instance;
 
         public override void Entry(IModHelper helper)
@@ -44,18 +42,19 @@ namespace EnhancedSlingshots
 
         public void OnSaved(object sender, SavedEventArgs e)
         {
-            foreach (var tool in changedTools)
-                LoadEnchantments(tool);
+            Utility.iterateAllItems(item =>
+            {
+                if (item is Tool tool)
+                    LoadEnchantments(tool);                
+            });
         }
         public void OnSaving(object sender, SavingEventArgs e)
         {
-            changedTools = new();
             Utility.iterateAllItems(item =>
             {
                 if (item is Tool tool)
                 {
                     SaveEnchantments(tool);
-                    changedTools.Add(tool);
                     //Monitor.Log($"Tool data: {tool.modData[EnchantmentsKey]}", LogLevel.Info);
                 }
             });

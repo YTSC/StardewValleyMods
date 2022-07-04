@@ -66,7 +66,7 @@ namespace EnhancedSlingshots.Framework.Patch
 					__instance.attachments[0].Stack--;
 
 					if (__instance.hasEnchantmentOfType<Enchantments.PreservingEnchantment>() &&
-						Game1.random.NextDouble() < ModEntry.Instance.config.PreciseEnchantment_Damage)
+						Game1.random.NextDouble() < ModEntry.Instance.config.PreservingEnchantment_PreserveChance)
 						__instance.attachments[0].Stack++;
 
 					if (__instance.attachments[0].Stack <= 0)

@@ -34,7 +34,7 @@ namespace EnhancedSlingshots.Framework.Patch
                 if (default(KeyValuePair<Vector2, SObject>).Equals(result))
                     return;
 
-                if(ModEntry.Instance.config.MagneticEnchantmentAffectedStones.Contains(result.Value.ParentSheetIndex))
+                if(ModEntry.Instance.config.MagneticEnchantment_AffectedStones.Contains(result.Value.ParentSheetIndex))
                     __result = true;
             }           
         }

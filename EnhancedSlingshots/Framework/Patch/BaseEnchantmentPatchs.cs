@@ -25,24 +25,34 @@ namespace EnhancedSlingshots.Framework.Patch
                 __result = new GalaxySoulEnchantment();            
         }
 
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(BaseEnchantment.GetAvailableEnchantments))]
+        public static void GetAvailableEnchantments_Prefix(List<BaseEnchantment> ____enchantments, out bool __state)
+        {
+            __state = ____enchantments is null;
+        }
+
         [HarmonyPostfix]
         [HarmonyPatch(nameof(BaseEnchantment.GetAvailableEnchantments))]
-        public static void GetAvailableEnchantments_Postfix(ref List<BaseEnchantment> __result)
+        public static void GetAvailableEnchantments_Postfix(ref List<BaseEnchantment> __result, bool __state)
         {
-            __result.AddRange(new List<BaseEnchantment>()
+            if (__state)
             {
-                //new GeminiEnchantment(),
-                new MagneticEnchantment(),
-                new AutomatedEnchantment(),
-                new ExpertEnchantment(),
-                new HunterEnchantment(),
-                new MinerEnchantment(),
-                new PreciseEnchantment(),
-                new SwiftEnchantment(),
-                new Enchantments.PreservingEnchantment(),
-                new Enchantments.BugKillerEnchantment(),
-                new Enchantments.VampiricEnchantment()
-            });
+                __result.AddRange(new BaseEnchantment[]
+                {
+                     //new GeminiEnchantment(),
+                    new MagneticEnchantment(),
+                    new AutomatedEnchantment(),
+                    new ExpertEnchantment(),
+                    new HunterEnchantment(),
+                    new MinerEnchantment(),
+                    new PreciseEnchantment(),
+                    new SwiftEnchantment(),
+                    new Enchantments.PreservingEnchantment(),
+                    new Enchantments.BugKillerEnchantment(),
+                    new Enchantments.VampiricEnchantment()
+                });               
+            }           
         }
     }
 }

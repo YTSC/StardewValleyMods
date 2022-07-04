@@ -16,7 +16,7 @@ namespace EnhancedSlingshots
         public int HunterEnchantment_ExtraDropsAmount { get; set; } 
         public int MinerEnchantment_ExtraDropsAmount { get; set; }          
         public int SwiftEnchantment_TimesFaster { get; set; }    
-        public int[] MagneticEnchantmentAffectedStones { get; set; }
+        public int[] MagneticEnchantment_AffectedStones { get; set; }
         public Dictionary<int,int> ItemsThatCanBeUsedAsAmmo { get; set; }
         public Config()
         {
@@ -31,7 +31,7 @@ namespace EnhancedSlingshots
             PreservingEnchantment_PreserveChance = 0.5f;
             SwiftEnchantment_TimesFaster = 2;
             VampiricEnchantment_RecoveryChance = 0.09f;
-            MagneticEnchantmentAffectedStones = new int[]
+            MagneticEnchantment_AffectedStones = new int[]
             {
                  2, //Diamond
                  4, //Ruby
@@ -70,13 +70,13 @@ namespace EnhancedSlingshots
                 { 441, 20 }, //Explosive ammo
                 //New additions
                 { 766, 5 }, //Slime             
-                { 80, 10 }, //Quartz
-                { 82, 20 }, //Fire Quartz
+                { 80, 10 }, //Quartz              
+                { 82, 20 }, //Fire Quartz                
                 { 84, 20 }, //Frozen Tear
                 { 86, 20 }, //Earth Crystal
-                { 557, 35 }, //Petrified Slime
-                { 768, 35 }, //Solar essence
-                { 769, 35 }, //Void essence
+                { 768, 25 }, //Solar essence
+                { 769, 25 }, //Void essence
+                { 557, 20 }, //Petrified Slime                
                 { 909, 75 }, //Radioactive ore
             };
         }
