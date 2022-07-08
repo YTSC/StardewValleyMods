@@ -19,9 +19,9 @@ namespace EnhancedSlingshots.Framework.Patch
         [HarmonyPatch(nameof(Tool.Forge))]
         public static void Forge_Postfix(Tool __instance, ref bool __result, Item item, bool count_towards_stats)
         {
-            if (__instance is Slingshot sling && sling.InitialParentTileIndex == Slingshot.galaxySlingshot)
+            BaseEnchantment enchantment = BaseEnchantment.GetEnchantmentFromItem(__instance, item);
+            if (__instance is Slingshot sling && sling.InitialParentTileIndex == Slingshot.galaxySlingshot && enchantment != null)
             {
-                BaseEnchantment enchantment = BaseEnchantment.GetEnchantmentFromItem(__instance, item);
                 if (enchantment is GalaxySoulEnchantment && sling.GetEnchantmentLevel<GalaxySoulEnchantment>() >= 3)
                 {
                     __instance.IndexOfMenuItemView = __instance.InitialParentTileIndex = __instance.CurrentParentTileIndex = ModEntry.Instance.config.InfinitySlingshotId;
@@ -31,7 +31,6 @@ namespace EnhancedSlingshots.Framework.Patch
 
                     GalaxySoulEnchantment enchant = __instance.GetEnchantmentOfType<GalaxySoulEnchantment>();
                     if (enchant != null) __instance.RemoveEnchantment(enchant);
-
                 }
                 if (count_towards_stats && !enchantment.IsForge())
                 {
@@ -40,7 +39,7 @@ namespace EnhancedSlingshots.Framework.Patch
                         __instance.previousEnchantments.RemoveAt(__instance.previousEnchantments.Count - 1);
 
                     Game1.stats.incrementStat("timesEnchanted", 1);
-                }           
+                }
                 __result = true;
                 return;
             }
@@ -51,7 +50,7 @@ namespace EnhancedSlingshots.Framework.Patch
         public static void AddEnchantment_Postfix(Tool __instance, ref bool __result, Farmer ___lastUser, BaseEnchantment enchantment)
         {
             if (__instance is Slingshot && enchantment != null && enchantment.IsSecondaryEnchantment())
-            {
+            {               
                 __instance.enchantments.Remove(enchantment);
                 enchantment.UnapplyTo(__instance, ___lastUser);
 
@@ -70,7 +69,7 @@ namespace EnhancedSlingshots.Framework.Patch
                     }
                 }
                 __instance.enchantments.Add(enchantment);
-                enchantment.ApplyTo(__instance, ___lastUser);
+                enchantment.ApplyTo(__instance, ___lastUser);             
                 __result = true;
                 return;
             }

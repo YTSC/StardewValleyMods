@@ -10,6 +10,7 @@ namespace EnhancedSlingshots.Framework
 {
     public enum EnchantmentKey
     {
+        Invalid = 0,
         Automated,
         Expert,
         Gemini,
@@ -23,7 +24,7 @@ namespace EnhancedSlingshots.Framework
         Vampiric,
     }
 
-    public static class ToolEnchantment
+    public static class SlingshotEnchantment
     {
         public static Dictionary<EnchantmentKey, BaseEnchantment> Enchantments = new()
         {
