@@ -2,7 +2,7 @@
   "profiles": {
     "QualityFishPonds": {
       "commandName": "Executable",
-      "executablePath": "E:\\Program Files (x86)\\Steam\\steamapps\\common\\Stardew Valley\\StardewModdingAPI.exe",
+      "executablePath":"C:\\SteamLibrary\\steamapps\\common\\Stardew Valley\\StardewModdingAPI.exe",
       "commandLineArgs": " --mods-path \"ModsTeste\""
     }
   }
