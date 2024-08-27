@@ -1,14 +1,14 @@
-﻿using StardewModdingAPI;
-
-namespace QualityFishPonds
+﻿namespace QualityFishPonds
 {
     class Config
     {
-        public bool EnableGaranteedIridum { get; set; }       
+        public bool EnableGaranteedIridum { get; set; }
+        public bool EnableQualityFishProduce { get; set; }
 
         public Config()
         {
-            EnableGaranteedIridum = true;          
+            EnableGaranteedIridum = true;
+            EnableQualityFishProduce = true;
         }
     }
 }

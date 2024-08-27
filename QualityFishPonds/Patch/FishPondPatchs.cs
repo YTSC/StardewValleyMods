@@ -1,7 +1,9 @@
 ﻿using HarmonyLib;
+using Netcode;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
+using System;
 using System.Linq;
 using SObject = StardewValley.Object;
 
@@ -10,6 +12,7 @@ namespace QualityFishPonds.Patch
     [HarmonyPatch(typeof(FishPond))]
     public static class FishPondPatchs
     {
+        private static bool IsClearingPond = false;
         private static IMonitor Monitor;
         public static void Initialize(IMonitor monitor)
         {
@@ -21,7 +24,9 @@ namespace QualityFishPonds.Patch
         public static void addFishToPond_Postfix(FishPond __instance, SObject fish)
         {
             if (__instance.modData.ContainsKey(ModEntry.fishPondIdKey))
+            {
                 __instance.modData[ModEntry.fishPondIdKey] += fish.Quality;
+            }
         }
 
         [HarmonyPostfix]
@@ -33,7 +38,7 @@ namespace QualityFishPonds.Patch
                 return;
             }
 
-            double dailyLuck = Game1.player.DailyLuck;
+            double dailyLuck = Game1.getOnlineFarmers().Max(farmer => farmer.DailyLuck);
             string pondData = __instance.modData[ModEntry.fishPondIdKey];
 
             if (ModEntry.Instance.config.EnableGaranteedIridum && dailyLuck < -0.02)
@@ -64,15 +69,60 @@ namespace QualityFishPonds.Patch
                 __instance.modData[ModEntry.fishPondIdKey] = pondData;
                 return;
             }
-
-
         }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(FishPond.GetFishProduce))]
+        public static void GetFishProduce_Postfix(FishPond __instance, ref Item __result)
+        {
+            if (!ModEntry.Instance.config.EnableQualityFishProduce
+                || !__instance.modData.ContainsKey(ModEntry.fishPondIdKey)
+                || __result is null)
+            {
+                return;
+            }
+
+            string pondData = __instance.modData[ModEntry.fishPondIdKey];
+            if (pondData.Length > 0)
+            {
+                int index = new Random().Next(pondData.Length - 1);
+                __result.Quality = Convert.ToInt32(pondData[index].ToString());
+            }
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch("CreateFishInstance")]
+        public static void CreateFishInstance_Postfix(FishPond __instance, NetString ___fishType, ref Item __result)
+        {
+            if (!__instance.modData.ContainsKey(ModEntry.fishPondIdKey) || !IsClearingPond)
+            {
+                return;
+            }
+
+            string pondData = __instance.modData[ModEntry.fishPondIdKey];
+            if (pondData?.Length > 0)
+            {
+                int fishQuality = Convert.ToInt32(pondData[pondData.Length - 1].ToString());
+                __instance.modData[ModEntry.fishPondIdKey] = pondData.Remove(pondData.Length - 1);
+                __result = new SObject(___fishType.Value, 1, quality: fishQuality);
+                return;
+            }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(FishPond.ClearPond))]
+        public static void ClearPond_Prefix()
+        {
+            IsClearingPond = true;
+        }
+
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(FishPond.ClearPond))]
         public static void ClearPond_Postfix(FishPond __instance)
         {
             __instance.modData[ModEntry.fishPondIdKey] = string.Empty;
+            IsClearingPond = false;
         }
 
 
@@ -93,7 +143,9 @@ namespace QualityFishPonds.Patch
         public static void performActionOnConstruction_Postfix(FishPond __instance)
         {
             if (!__instance.modData.ContainsKey(ModEntry.fishPondIdKey))
+            {
                 __instance.modData.Add(ModEntry.fishPondIdKey, string.Empty);
+            }
 
         }
     }

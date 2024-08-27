@@ -4,6 +4,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Buildings;
+using System.Linq;
 using System.Reflection;
 
 namespace QualityFishPonds
@@ -17,32 +18,31 @@ namespace QualityFishPonds
         public override void Entry(IModHelper helper)
         {
             Instance = this;
-
-            harmony = new(Helper.ModRegistry.ModID);
             config = helper.ReadConfig<Config>();
             fishPondIdKey = $"{Helper.ModRegistry.ModID}(FishPondID)";
             FishPondPatchs.Initialize(Monitor);
             FishingRodPatchs.Initialize(Monitor);
             PondQueryMenuPatchs.Initialize(Monitor);
             Helper.Events.GameLoop.DayStarted += OnDayStarted;
+            harmony = new(Helper.ModRegistry.ModID);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
+
         }
 
         private void OnDayStarted(object sender, DayStartedEventArgs e)
         {
-            Farm farm = Game1.getFarm();
-            foreach (Building building in farm.buildings)
-            {
-                if (!IsBuildingFishPond(building)) continue;
-
-                FishPond pond = (FishPond)building;
-                if (!pond.modData.ContainsKey(fishPondIdKey))
+            Game1.locations
+                .SelectMany(location => location.buildings)
+                .Where(building => IsBuildingFishPond(building))
+                .Do(building =>
                 {
-                    string fishQualities = new string('0', pond.FishCount);
-                    pond.modData.Add(fishPondIdKey, fishQualities);
-                }
-
-            }
+                    FishPond pond = (FishPond)building;
+                    if (!pond.modData.ContainsKey(fishPondIdKey))
+                    {
+                        string fishQualities = new string('0', pond.FishCount);
+                        pond.modData.Add(fishPondIdKey, fishQualities);
+                    }
+                });
         }
 
         public static bool IsBuildingFishPond(Building building)
