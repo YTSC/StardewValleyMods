@@ -19,14 +19,6 @@ namespace QualityFishPonds.Patch
 
         private static MethodInfo calculateBobberTileMethod = AccessTools.Method(typeof(FishingRod), "calculateBobberTile");
 
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(FishingRod.pullFishFromWater))]
-        public static void pullFishFromWater_Prefix()
-        {
-            Monitor.Log("pullFishFromWater_Prefix", LogLevel.Info);
-        }
-
-        [HarmonyDebug]
         [HarmonyPostfix]
         [HarmonyPatch(nameof(FishingRod.pullFishFromWater))]
         public static void pullFishFromWater_Postfix(FishingRod __instance, bool fromFishPond)
@@ -40,14 +32,14 @@ namespace QualityFishPonds.Patch
             Vector2 bobberTile = (Vector2)calculateBobberTileMethod.Invoke(__instance, new object[] { });
             Building building = __instance.getLastFarmerToUse().currentLocation.getBuildingAt(bobberTile);
 
-            if (ModEntry.IsBuildingFishPond(building) && building.modData.ContainsKey(ModEntry.fishPondIdKey))
+            if (ModEntry.IsBuildingFishPond(building) && building.modData.ContainsKey(ModEntry.FishPondIdKey))
             {
                 FishPond pond = (FishPond)building;
-                string pondData = pond.modData[ModEntry.fishPondIdKey];
+                string pondData = pond.modData[ModEntry.FishPondIdKey];
                 if (pondData?.Length > 0)
                 {
                     __instance.fishQuality = Convert.ToInt32(pondData[pondData.Length - 1].ToString());
-                    pond.modData[ModEntry.fishPondIdKey] = pondData.Remove(pondData.Length - 1);
+                    pond.modData[ModEntry.FishPondIdKey] = pondData.Remove(pondData.Length - 1);
                     return;
                 }
             }

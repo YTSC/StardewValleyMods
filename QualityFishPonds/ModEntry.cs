@@ -12,21 +12,20 @@ namespace QualityFishPonds
     public class ModEntry : Mod
     {
         public static ModEntry Instance;
-        public static string fishPondIdKey;
+        public static string FishPondIdKey;
         internal Config config;
         private Harmony harmony;
         public override void Entry(IModHelper helper)
         {
             Instance = this;
             config = helper.ReadConfig<Config>();
-            fishPondIdKey = $"{Helper.ModRegistry.ModID}(FishPondID)";
+            FishPondIdKey = $"{Helper.ModRegistry.ModID}(FishPondID)";
             FishPondPatchs.Initialize(Monitor);
             FishingRodPatchs.Initialize(Monitor);
             PondQueryMenuPatchs.Initialize(Monitor);
             Helper.Events.GameLoop.DayStarted += OnDayStarted;
             harmony = new(Helper.ModRegistry.ModID);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
-
         }
 
         private void OnDayStarted(object sender, DayStartedEventArgs e)
@@ -37,10 +36,10 @@ namespace QualityFishPonds
                 .Do(building =>
                 {
                     FishPond pond = (FishPond)building;
-                    if (!pond.modData.ContainsKey(fishPondIdKey))
+                    if (!pond.modData.ContainsKey(FishPondIdKey))
                     {
                         string fishQualities = new string('0', pond.FishCount);
-                        pond.modData.Add(fishPondIdKey, fishQualities);
+                        pond.modData.Add(FishPondIdKey, fishQualities);
                     }
                 });
         }
