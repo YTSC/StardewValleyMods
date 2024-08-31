@@ -4,6 +4,7 @@ using StardewModdingAPI;
 using StardewValley.Buildings;
 using StardewValley.Tools;
 using System;
+using System.IO;
 using System.Reflection;
 
 namespace QualityFishPonds.Patch
@@ -20,10 +21,18 @@ namespace QualityFishPonds.Patch
         private static MethodInfo calculateBobberTileMethod = AccessTools.Method(typeof(FishingRod), "calculateBobberTile");
 
         [HarmonyPostfix]
-        [HarmonyPatch(nameof(FishingRod.pullFishFromWater))]
-        public static void pullFishFromWater_Postfix(FishingRod __instance, bool fromFishPond)
+        [HarmonyPatch("doPullFishFromWater")]
+        public static void doPullFishFromWater_Postfix(FishingRod __instance, BinaryReader argReader)
         {
-            Monitor.Log("pullFishFromWater_Postfix", LogLevel.Info);
+            argReader.BaseStream.Seek(0, SeekOrigin.Begin);
+            _ = argReader.ReadString();
+            _ = argReader.ReadInt32();
+            _ = argReader.ReadInt32();
+            _ = argReader.ReadInt32();
+            _ = argReader.ReadBoolean();
+            _ = argReader.ReadBoolean();
+            bool fromFishPond = argReader.ReadBoolean();
+
             if (!fromFishPond)
             {
                 return;
